@@ -1,10 +1,10 @@
-package com.myservice.config.myserviceconfigserver;
+package com.myservice.gateway.myservicegatewayserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MyserviceConfigServerApplicationTests {
+class MyServiceGatewayServerApplicationTests {
 
 	@Test
 	void contextLoads() {
