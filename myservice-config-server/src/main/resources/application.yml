@@ -6,4 +6,4 @@ spring:
     config:
       server:
         git:
-          uri: https://gitlab.com/jrsilvanio/arquitetura-config.git
+          uri: https://gitlab.com/jrsilvanio/myservice-config.git
