@@ -1,4 +1,4 @@
-package com.myservice.auth.model.domain;
+package com.myservice.common.domain;
 
 public enum Authorities {
 

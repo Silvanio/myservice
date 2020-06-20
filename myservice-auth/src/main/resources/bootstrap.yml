@@ -2,5 +2,8 @@ spring:
   application:
     name: myservice-auth
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
     config:
-      uri:  http://localhost:9090
+      uri: http://localhost:9090

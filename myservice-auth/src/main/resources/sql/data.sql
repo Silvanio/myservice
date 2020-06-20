@@ -16,7 +16,7 @@ WHERE NOT EXISTS (
     SELECT username FROM auth.user WHERE username = 'admin'
 ) LIMIT 1;
 
-INSERT INTO auth.user (code,username,name, email, password, activated,id_company)
+INSERT INTO auth.user (username,name, email, password, activated,id_company)
 SELECT * FROM (SELECT 'integer','Integer Cliente', 'integer@gmail.com', '$2a$10$r0RFDmpneBVryx.ihHK9gu6FFJQi4nTxQUqzdSTvrPpaKZMxigqpy',true, 4) AS tmp
 WHERE NOT EXISTS (
     SELECT username FROM auth.user WHERE username = 'integer'

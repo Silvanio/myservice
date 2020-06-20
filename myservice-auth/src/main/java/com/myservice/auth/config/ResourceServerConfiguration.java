@@ -11,8 +11,7 @@ import javax.ws.rs.HttpMethod;
 
 @Configuration
 @EnableResourceServer
-public class ResourceServerConfiguration extends
-        ResourceServerConfigurerAdapter {
+public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
     @Value("${security.oauth2.client.resource-ids}")
     private String RESOURCE_ID;
@@ -29,13 +28,11 @@ public class ResourceServerConfiguration extends
                 .antMatchers("/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/teste/outro/**").permitAll()
-               // .antMatchers(HttpMethod.OPTIONS, "/oauth/token").permitAll()
-               // .antMatchers(HttpMethod.GET, "/**").access("#oauth2.hasScope('read')")
-               // .antMatchers(HttpMethod.OPTIONS, "/**").access("#oauth2.hasScope('read')")
-               // .antMatchers(HttpMethod.POST, "/**").access("#oauth2.hasScope('write')")
-               // .antMatchers(HttpMethod.PUT, "/**").access("#oauth2.hasScope('write')")
-              //  .antMatchers(HttpMethod.DELETE, "/**").access("#oauth2.hasScope('write')")
+                .antMatchers("/forgotPassword/**").permitAll()
+                //Permissão para @EnableAdminServer
+                .antMatchers("/instances/*","/actuator/**","/assets/**","/management/**").permitAll()
+                //Permissão para @EnableSwagger2
+                .antMatchers("/swagger*", "/v2/**","/webjars/**","/swagger-resources/**","/api/**").permitAll()
                 .anyRequest()
                 .authenticated();
     }

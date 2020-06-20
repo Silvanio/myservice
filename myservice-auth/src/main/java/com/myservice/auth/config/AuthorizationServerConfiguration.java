@@ -2,7 +2,7 @@ package com.myservice.auth.config;
 
 import javax.sql.DataSource;
 
-import com.myservice.auth.model.domain.Authorities;
+import com.myservice.common.domain.Authorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
