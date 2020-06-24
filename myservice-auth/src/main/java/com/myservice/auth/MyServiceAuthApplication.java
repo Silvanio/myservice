@@ -35,7 +35,7 @@ public class MyServiceAuthApplication {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "MyServices API - Acessos",
-                "API rensp8nsável por gerenciar as funcionalidades MyServices - Acessos.",
+                "API rensponsável por gerenciar as funcionalidades MyServices - Acessos.",
                 "API Version v01_20062020",
                 "Terms of service",
                 new Contact("Silvânio Júnior", "www.linkedin.com/in/silvaniojunior", "jrsilvanio@gmail.com"),

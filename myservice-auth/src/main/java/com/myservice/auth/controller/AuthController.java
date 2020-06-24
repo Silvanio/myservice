@@ -16,7 +16,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/")
-@Api(value = "API - MyServices Acessos")
+@Api(value = "AUTH API - Autenticação")
 public class AuthController {
 
     @Autowired

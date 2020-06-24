@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
@@ -21,17 +22,21 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "MSG_REQUIRED_FIELDS")
     @Column(nullable = false)
     private String username;
 
+    @NotNull(message = "MSG_REQUIRED_FIELDS")
     @Column(nullable = false)
     private String name;
 
+    @NotNull(message = "MSG_REQUIRED_FIELDS")
     @Size(max = 500)
     private String password;
 
     @Email
     @Size(max = 100)
+    @NotNull(message = "MSG_REQUIRED_FIELDS")
     private String email;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false")

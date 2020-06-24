@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS auth.oauth_access_token (
   token_id VARCHAR(256) DEFAULT NULL,
   token bytea,
-  authentication_id VARCHAR(256) DEFAULT NULL,
+  authentication_id VARCHAR(256) DEFAULT NULL PRIMARY KEY,
   user_name VARCHAR(256) DEFAULT NULL,
   client_id VARCHAR(256) DEFAULT NULL,
   authentication bytea,

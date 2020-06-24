@@ -8,4 +8,8 @@ public interface UserService {
     UserDTO loadUserInfoBy(String code,String username) throws UsernameNotFoundException;
 
     void forgotPassword(String codeCompany, String username);
+
+    void changePassword(UserDTO user);
+
+    void update(UserDTO user);
 }
