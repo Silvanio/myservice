@@ -3,10 +3,7 @@ package com.myservice.auth.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -27,8 +24,9 @@ public class Authority implements Serializable {
 
     private String description;
 
-    @Column(name = "module_name")
-    private String module;
+    @ManyToOne
+    @JoinColumn(name="id_app_module",nullable = false)
+    private AppModule appModule;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private boolean client;

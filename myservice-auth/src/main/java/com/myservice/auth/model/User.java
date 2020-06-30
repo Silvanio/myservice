@@ -1,12 +1,13 @@
 package com.myservice.auth.model;
 
+import com.myservice.common.domain.MyEntity;
 import lombok.Getter;
 import lombok.Setter;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.Set;
 
 
@@ -14,13 +15,9 @@ import java.util.Set;
 @Entity
 @Setter
 @Getter
-public class User implements Serializable {
+public class User extends MyEntity {
 
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @NotNull(message = "MSG_REQUIRED_FIELDS")
     @Column(nullable = false)

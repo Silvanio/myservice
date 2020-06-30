@@ -23,21 +23,20 @@ public class UserController {
     @PostMapping("/changePassword")
     public ResponseMessageDTO changePassword(@RequestBody UserDTO user) {
         userService.changePassword(user);
-        return new ResponseMessageDTO("msg_general_success");
+        return ResponseMessageDTO.get("msg_general_success");
     }
 
     @ApiOperation(value = "Alterar Senha", response = ResponseMessageDTO.class)
     @PostMapping("/update")
     public ResponseMessageDTO update(@RequestBody UserDTO user) {
         userService.update(user);
-        return new ResponseMessageDTO("msg_general_success");
+        return  ResponseMessageDTO.get("msg_general_success");
     }
 
     @ApiOperation(value = "Alterar Senha", response = ResponseMessageDTO.class)
     @PostMapping("/teste")
     public ResponseMessageDTO teste() {
-        return new ResponseMessageDTO("msg_general_success");
+        return ResponseMessageDTO.get("msg_general_success");
     }
-
 
 }

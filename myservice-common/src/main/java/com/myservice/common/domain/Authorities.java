@@ -1,5 +1,8 @@
 package com.myservice.common.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum Authorities {
 
 	AUTH_CLIENT_ADMIN,

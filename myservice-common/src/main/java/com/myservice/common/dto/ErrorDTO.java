@@ -10,6 +10,7 @@ public class ErrorDTO {
   private Date timestamp;
   private String message;
   private String details;
+  private String field;
 
   public ErrorDTO(Date timestamp, String message, String details) {
     super();

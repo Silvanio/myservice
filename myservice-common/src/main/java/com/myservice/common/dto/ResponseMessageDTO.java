@@ -7,14 +7,23 @@ import java.util.List;
 
 @Setter
 @Getter
-public class ResponseMessageDTO {
+public class ResponseMessageDTO{
     String message;
     List<String> details;
 
-    public ResponseMessageDTO(String message) {
+
+    public static ResponseMessageDTO get(String message){
+        return new ResponseMessageDTO(message);
+    }
+
+    public static ResponseMessageDTO get(String message, List<String> details){
+        return new ResponseMessageDTO(message,details);
+    }
+
+    private ResponseMessageDTO(String message) {
         this.message = message;
     }
-    public ResponseMessageDTO(String message, List<String> details) {
+    private ResponseMessageDTO(String message, List<String> details) {
         this.message = message;
         this.details = details;
     }

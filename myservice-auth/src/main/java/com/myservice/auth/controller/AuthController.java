@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/forgotPassword/{codeCompany}/{username}")
     public ResponseMessageDTO forgotPassword(@PathVariable String codeCompany, @PathVariable String username) {
         userService.forgotPassword(codeCompany, username);
-        return new ResponseMessageDTO("msg_general_success");
+        return ResponseMessageDTO.get("msg_general_success");
     }
 
     @ApiOperation(value = "Apenas Teste", response = ResponseMessageDTO.class)

@@ -1,7 +1,9 @@
 package com.myservice.auth.service.impl;
 
+import com.myservice.auth.model.AppModule;
 import com.myservice.auth.model.Authority;
 import com.myservice.auth.model.User;
+import com.myservice.common.dto.auth.AppModuleDTO;
 import com.myservice.common.dto.auth.CompanyDTO;
 import com.myservice.common.dto.auth.UserDTO;
 import com.myservice.auth.repository.UserRepository;
@@ -108,13 +110,23 @@ public class UserServiceImpl implements UserService {
         userDTO.setName(user.getName());
         userDTO.setEmail(user.getEmail());
         userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toList()));
-        userDTO.setModules(user.getAuthorities().stream().map(Authority::getModule).collect(Collectors.toList()));
-        userDTO.setModules(userDTO.getModules().stream().distinct().collect(Collectors.toList()));
+        userDTO.setAppModules(user.getAuthorities().stream().map(Authority::getAppModule).map(this::parseModuleDTO).collect(Collectors.toList()));
         CompanyDTO companyDTO = new CompanyDTO();
-        companyDTO.setClient(user.getCompany().isClient());
+        companyDTO.setClient(user.getCompany().getClient());
         companyDTO.setFiscalNumber(user.getCompany().getFiscalNumber());
         companyDTO.setName(user.getCompany().getName());
         userDTO.setCompany(companyDTO);
         return userDTO;
+    }
+
+    private AppModuleDTO parseModuleDTO(AppModule appModule) {
+        AppModuleDTO appModuleDTO = new AppModuleDTO();
+        if (appModule != null) {
+            appModuleDTO.setId(appModule.getId());
+            appModuleDTO.setName(appModule.getName());
+            appModuleDTO.setDescription(appModule.getDescription());
+            appModuleDTO.setWebUrl(appModule.getWebUrl());
+        }
+        return appModuleDTO;
     }
 }
