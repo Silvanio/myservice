@@ -1,18 +1,17 @@
 package com.myservice.auth.controller;
 
-import com.myservice.common.domain.Authorities;
-import com.myservice.common.dto.auth.UserDTO;
 import com.myservice.auth.service.UserService;
-import com.myservice.common.dto.ResponseMessageDTO;
+import com.myservice.common.dto.auth.UserDTO;
+import com.myservice.common.dto.common.ResponseMessageDTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.security.Principal;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/")
@@ -34,13 +33,6 @@ public class AuthController {
     public ResponseMessageDTO forgotPassword(@PathVariable String codeCompany, @PathVariable String username) {
         userService.forgotPassword(codeCompany, username);
         return ResponseMessageDTO.get("msg_general_success");
-    }
-
-    @ApiOperation(value = "Apenas Teste", response = ResponseMessageDTO.class)
-    @PostMapping("/testar")
-    @PreAuthorize(Authorities.HAS_AUTHORITY_AUTH_ADMIN)
-    public String testar() {
-        return "AUTH_ADMIN";
     }
 
 }

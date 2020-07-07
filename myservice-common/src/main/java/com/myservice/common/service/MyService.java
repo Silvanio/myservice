@@ -3,7 +3,7 @@ package com.myservice.common.service;
 import com.myservice.common.domain.IEntity;
 import com.myservice.common.domain.MyEntity;
 import com.myservice.common.domain.StatusEnum;
-import com.myservice.common.dto.IDTO;
+import com.myservice.common.dto.common.IDTO;
 import com.myservice.common.dto.pagination.FilterDTO;
 import com.myservice.common.dto.pagination.PageableDTO;
 import com.myservice.common.exceptions.BusinessException;
@@ -14,11 +14,17 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public abstract class MyService<ID extends Serializable, E extends IEntity, D extends IDTO> implements IService<ID, E, D> {
+
 
     @Override
     public Page<E> findAll(PageableDTO<E, D> pageableDTO) {
@@ -86,12 +92,22 @@ public abstract class MyService<ID extends Serializable, E extends IEntity, D ex
         return Example.of(pageableDTO.getEntity(), matcher);
     }
 
-    protected void prepareUpdate(E entity) {
+    protected void validate(E entity) {
+        final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        final Validator validator = factory.getValidator();
+        final Set<ConstraintViolation<E>> validate = validator.validate(entity);
+        if (validate.size() > 0) {
+            ConstraintViolation<E> violation = validate.iterator().next();
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), violation.getMessage());
+        }
+    }
 
+    protected void prepareUpdate(E entity) {
+        validate(entity);
     }
 
     protected void prepareSave(E entity) {
-
+        validate(entity);
     }
 
     public abstract IRepository<ID, E, D> getRepository();

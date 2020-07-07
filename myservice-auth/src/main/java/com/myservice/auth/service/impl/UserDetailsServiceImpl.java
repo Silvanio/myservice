@@ -3,6 +3,7 @@ package com.myservice.auth.service.impl;
 import com.myservice.auth.model.Authority;
 import com.myservice.auth.model.User;
 import com.myservice.auth.repository.UserRepository;
+import com.myservice.common.domain.StatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,7 +26,7 @@ public class UserDetailsServiceImpl implements org.springframework.security.core
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String[] info = validateUser(username);
-        return userRepository.findByCodeCompanyAndUsername(info[0],info[1])
+        return userRepository.findByCodeCompanyAndUsernameAndStatus(info[0],info[1], StatusEnum.ACTIVE)
                 .map(user -> new org.springframework.security.core.userdetails.User(username, user.getPassword(), getGrantedAuthorities(user)))
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " Not found"));
     }

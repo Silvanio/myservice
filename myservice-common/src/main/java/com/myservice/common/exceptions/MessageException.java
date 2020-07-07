@@ -9,7 +9,12 @@ public enum MessageException {
     ERROR_SEND_MAIL("msg_error_send_mail"),
     MSG_REQUIRED_FIELDS("msg_required_fields"),
     MSG_INVALID_PASSWORD("msg_invalid_password"),
-    MSG_GENERAL_ERROR("msg_general_error");
+    MSG_GENERAL_ERROR("msg_general_error"),
+    MSG_GENERAL_VALIDATE("msg_general_validate"),
+    MSG_PERIOD_DATE_INVALID("msg_period_date_invalid"),
+    MSG_USERNAME_EXIST("msg_username_exist");
+
+
 
     private String message;
 

@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -40,6 +42,11 @@ public class MyServiceAuthApplication {
                 "Terms of service",
                 new Contact("Silvânio Júnior", "www.linkedin.com/in/silvaniojunior", "jrsilvanio@gmail.com"),
                 "License of API", "API license URL", Collections.emptyList());
+    }
+
+    @Bean
+    public Validator validatorFactory () {
+        return new LocalValidatorFactoryBean();
     }
 
 }

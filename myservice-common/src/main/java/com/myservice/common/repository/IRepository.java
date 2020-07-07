@@ -1,7 +1,7 @@
 package com.myservice.common.repository;
 
 import com.myservice.common.domain.IEntity;
-import com.myservice.common.dto.IDTO;
+import com.myservice.common.dto.common.IDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

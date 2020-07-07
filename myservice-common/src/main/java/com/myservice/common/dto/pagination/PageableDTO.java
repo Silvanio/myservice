@@ -1,7 +1,7 @@
 package com.myservice.common.dto.pagination;
 
 import com.myservice.common.domain.IEntity;
-import com.myservice.common.dto.IDTO;
+import com.myservice.common.dto.common.IDTO;
 import lombok.Getter;
 import lombok.Setter;
 

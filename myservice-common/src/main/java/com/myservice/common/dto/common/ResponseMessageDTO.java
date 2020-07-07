@@ -1,4 +1,4 @@
-package com.myservice.common.dto;
+package com.myservice.common.dto.common;
 
 import lombok.Getter;
 import lombok.Setter;

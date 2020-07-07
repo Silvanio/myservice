@@ -3,14 +3,17 @@ package com.myservice.auth.service.impl;
 import com.myservice.auth.model.AppModule;
 import com.myservice.auth.model.Authority;
 import com.myservice.auth.model.User;
-import com.myservice.common.dto.auth.AppModuleDTO;
-import com.myservice.common.dto.auth.CompanyDTO;
-import com.myservice.common.dto.auth.UserDTO;
+import com.myservice.auth.repository.CompanyRepository;
 import com.myservice.auth.repository.UserRepository;
 import com.myservice.auth.service.MailService;
 import com.myservice.auth.service.UserService;
+import com.myservice.common.domain.StatusEnum;
+import com.myservice.common.dto.auth.AppModuleDTO;
+import com.myservice.common.dto.auth.CompanyDTO;
+import com.myservice.common.dto.auth.UserDTO;
 import com.myservice.common.exceptions.BusinessException;
 import com.myservice.common.exceptions.MessageException;
+import com.myservice.common.service.MyService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -28,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends MyService<Long, User, UserDTO> implements UserService {
 
     @Autowired
     MailService mailService;
@@ -36,21 +39,54 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    CompanyRepository companyRepository;
+
     public UserDTO loadUserInfoBy(String code, String username) throws UsernameNotFoundException {
-        return userRepository.findByCodeCompanyAndUsername(code, username)
+        return userRepository.findByCodeCompanyAndUsernameAndStatus(code, username, StatusEnum.ACTIVE)
                 .map(this::parseDTO)
                 .orElseThrow(() -> new UsernameNotFoundException("User " + username + " Not found"));
     }
 
     @Override
+    protected void prepareSave(User entity) {
+        String newPassword = "123456";
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        entity.setPassword(passwordEncoder.encode(newPassword));
+        entity.setCompany(companyRepository.getOne(entity.getCompany().getId()));
+        Optional<User> userBD = getRepository().findByCodeCompanyAndUsername(entity.getCompany().getCode(), entity.getUsername());
+        if (userBD.isPresent()) {
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_USERNAME_EXIST.getMessage());
+        }
+        sendMailWelcome(entity, newPassword);
+        super.prepareSave(entity);
+    }
+
+    private void sendMailWelcome(User entity, String newPassword) {
+        try {
+            mailService.sendEmailHtml(fillHtmlWelcome(entity, newPassword), "MyServices - Bem vinda(o)", entity.getEmail());
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    protected void prepareUpdate(User entity) {
+        Optional<User> userBD = getRepository().findByCodeCompanyAndUsername(entity.getCompany().getCode(), entity.getUsername());
+        if (userBD.isPresent() && entity.getId() != userBD.get().getId()) {
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_USERNAME_EXIST.getMessage());
+        }
+        super.prepareUpdate(entity);
+    }
+
+    @Override
     public void forgotPassword(String codeCompany, String username) {
-        UserDTO userDTO = userRepository.findByCodeCompanyAndUsername(codeCompany, username)
+        UserDTO userDTO = userRepository.findByCodeCompanyAndUsernameAndStatus(codeCompany, username, StatusEnum.ACTIVE)
                 .map(this::parseDTO)
                 .orElseThrow(() -> new BusinessException(MessageException.ERROR_SEND_MAIL.getMessage(), MessageException.USER_NOT_FOUND.getMessage()));
         try {
             String newPassword = "123456";
             mailService.sendEmailHtml(fillHtmlForgotPassword(userDTO, newPassword), "Recuperar Senha", userDTO.getEmail());
-            User user = userRepository.findByCodeCompanyAndUsername(codeCompany, username).get();
+            User user = userRepository.findByCodeCompanyAndUsernameAndStatus(codeCompany, username, StatusEnum.ACTIVE).get();
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
@@ -81,7 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(UserDTO userDTO) {
+    public void updateUser(UserDTO userDTO) {
         Optional<User> userOptional = userRepository.findById(userDTO.getId());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -103,6 +139,14 @@ public class UserServiceImpl implements UserService {
         return template;
     }
 
+    private String fillHtmlWelcome(User user,String newPassword) throws IOException {
+        InputStream resource = new ClassPathResource("welcome.html").getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
+        String template = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        template = template.replaceAll("@username", user.getName()).replaceAll("@password", newPassword);
+        return template;
+    }
+
     private UserDTO parseDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
@@ -112,6 +156,7 @@ public class UserServiceImpl implements UserService {
         userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toList()));
         userDTO.setAppModules(user.getAuthorities().stream().map(Authority::getAppModule).map(this::parseModuleDTO).collect(Collectors.toList()));
         CompanyDTO companyDTO = new CompanyDTO();
+        companyDTO.setId(user.getCompany().getId());
         companyDTO.setClient(user.getCompany().getClient());
         companyDTO.setFiscalNumber(user.getCompany().getFiscalNumber());
         companyDTO.setName(user.getCompany().getName());
@@ -128,5 +173,10 @@ public class UserServiceImpl implements UserService {
             appModuleDTO.setWebUrl(appModule.getWebUrl());
         }
         return appModuleDTO;
+    }
+
+    @Override
+    public UserRepository getRepository() {
+        return userRepository;
     }
 }

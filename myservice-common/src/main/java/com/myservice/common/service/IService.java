@@ -1,7 +1,7 @@
 package com.myservice.common.service;
 
 import com.myservice.common.domain.IEntity;
-import com.myservice.common.dto.IDTO;
+import com.myservice.common.dto.common.IDTO;
 import com.myservice.common.dto.pagination.PageableDTO;
 import org.springframework.data.domain.Page;
 

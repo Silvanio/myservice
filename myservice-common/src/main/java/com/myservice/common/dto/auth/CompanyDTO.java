@@ -1,6 +1,6 @@
 package com.myservice.common.dto.auth;
 
-import com.myservice.common.dto.MyDTO;
+import com.myservice.common.dto.common.MyDTO;
 import lombok.Getter;
 import lombok.Setter;
 
