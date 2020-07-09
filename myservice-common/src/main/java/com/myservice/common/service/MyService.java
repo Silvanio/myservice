@@ -72,6 +72,12 @@ public abstract class MyService<ID extends Serializable, E extends IEntity, D ex
         return getRepository().findAll();
     }
 
+    @Override
+    public List<E> findAllByStatus(StatusEnum status) {
+        return getRepository().findAllByStatus(status);
+    }
+
+
     protected Example<E> getFilterByExample(PageableDTO<E, D> pageableDTO) {
 
         if (pageableDTO == null || pageableDTO.getEntity() == null) {

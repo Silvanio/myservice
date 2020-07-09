@@ -12,7 +12,9 @@ public enum MessageException {
     MSG_GENERAL_ERROR("msg_general_error"),
     MSG_GENERAL_VALIDATE("msg_general_validate"),
     MSG_PERIOD_DATE_INVALID("msg_period_date_invalid"),
-    MSG_USERNAME_EXIST("msg_username_exist");
+    MSG_USERNAME_EXIST("msg_username_exist"),
+    MSG_CONTRACT_EXPIRED("msg_contract_expired"),
+    MSG_CONTRACT_LIMIT_USER("msg_contract_limit_user");
 
 
 

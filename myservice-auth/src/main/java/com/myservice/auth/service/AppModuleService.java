@@ -6,6 +6,8 @@ import com.myservice.common.dto.auth.AppModuleDTO;
 import com.myservice.common.dto.auth.ContractDTO;
 import com.myservice.common.service.IService;
 
+import java.util.List;
+
 public interface AppModuleService extends IService<Long, AppModule, AppModuleDTO> {
 
 }

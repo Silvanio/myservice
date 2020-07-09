@@ -17,4 +17,7 @@ public interface UserRepository extends IRepository<Long, User, UserDTO>{
 
     @Query("SELECT u from User u inner join  u.company c where  LOWER(u.username) = LOWER(:username) and LOWER(c.code) =  LOWER(:code)")
     Optional<User> findByCodeCompanyAndUsername(@Param("code") String code, @Param("username") String username);
+
+    @Query("select count(u) from User u inner join  u.company c where u.status = :status and c.id = :idCompany")
+    Long countUserByStatusAndCompany(@Param("status") StatusEnum status, @Param("idCompany") Long idCompany);
 }

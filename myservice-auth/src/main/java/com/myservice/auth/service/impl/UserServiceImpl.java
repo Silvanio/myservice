@@ -1,9 +1,8 @@
 package com.myservice.auth.service.impl;
 
-import com.myservice.auth.model.AppModule;
-import com.myservice.auth.model.Authority;
-import com.myservice.auth.model.User;
+import com.myservice.auth.model.*;
 import com.myservice.auth.repository.CompanyRepository;
+import com.myservice.auth.repository.ContractRepository;
 import com.myservice.auth.repository.UserRepository;
 import com.myservice.auth.service.MailService;
 import com.myservice.auth.service.UserService;
@@ -26,7 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,10 +41,16 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
     @Autowired
     CompanyRepository companyRepository;
 
+    @Autowired
+    ContractRepository contractRepository;
+
     public UserDTO loadUserInfoBy(String code, String username) throws UsernameNotFoundException {
-        return userRepository.findByCodeCompanyAndUsernameAndStatus(code, username, StatusEnum.ACTIVE)
-                .map(this::parseDTO)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " Not found"));
+        Optional<User> userOptional = userRepository.findByCodeCompanyAndUsernameAndStatus(code, username, StatusEnum.ACTIVE);
+        if (userOptional.isPresent()) {
+            return parseDTO(userOptional.get());
+        } else {
+            throw new  UsernameNotFoundException("User " + username + " Not found");
+        }
     }
 
     @Override
@@ -58,8 +63,24 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         if (userBD.isPresent()) {
             throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_USERNAME_EXIST.getMessage());
         }
+        validateCountUser(entity);
         sendMailWelcome(entity, newPassword);
         super.prepareSave(entity);
+    }
+
+    private void validateCountUser(User entity) {
+        List<Contract> contracts = contractRepository.findContractByCompanyIdAndStatusAndValidate(StatusEnum.ACTIVE,entity.getCompany().getId(), new Date());
+        Integer maxUser = 0;
+        for(Contract contract : contracts){
+            if(contract.getCountUser() > maxUser){
+                maxUser =contract.getCountUser();
+            }
+        }
+        Long count = userRepository.countUserByStatusAndCompany(StatusEnum.ACTIVE,entity.getCompany().getId());
+        if(count >= maxUser && StatusEnum.ACTIVE.equals(entity.getStatus())){
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_CONTRACT_LIMIT_USER.getMessage());
+        }
+
     }
 
     private void sendMailWelcome(User entity, String newPassword) {
@@ -75,6 +96,7 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         if (userBD.isPresent() && entity.getId() != userBD.get().getId()) {
             throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_USERNAME_EXIST.getMessage());
         }
+        validateCountUser(entity);
         super.prepareUpdate(entity);
     }
 
@@ -139,7 +161,7 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         return template;
     }
 
-    private String fillHtmlWelcome(User user,String newPassword) throws IOException {
+    private String fillHtmlWelcome(User user, String newPassword) throws IOException {
         InputStream resource = new ClassPathResource("welcome.html").getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
         String template = reader.lines().collect(Collectors.joining(System.lineSeparator()));
@@ -153,7 +175,7 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         userDTO.setUsername(user.getUsername());
         userDTO.setName(user.getName());
         userDTO.setEmail(user.getEmail());
-        userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toList()));
+        userDTO.setAuthorities(getAuthoritiesByContract(user));
         userDTO.setAppModules(user.getAuthorities().stream().map(Authority::getAppModule).map(this::parseModuleDTO).collect(Collectors.toList()));
         CompanyDTO companyDTO = new CompanyDTO();
         companyDTO.setId(user.getCompany().getId());
@@ -162,6 +184,31 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         companyDTO.setName(user.getCompany().getName());
         userDTO.setCompany(companyDTO);
         return userDTO;
+    }
+
+    private List<String> getAuthoritiesByContract(User user) {
+        HashSet<String> modules = getContractModules(user);
+        List<String> authorities = new ArrayList<>();
+        for (Authority authority : user.getAuthorities()) {
+            if (modules.contains(authority.getAppModule().getName())) {
+                authorities.add(authority.getName());
+            }
+        }
+        return authorities;
+    }
+
+    private HashSet<String> getContractModules(User user) {
+        Company company = user.getCompany();
+        List<Contract> contracts = contractRepository.findContractByCompanyIdAndStatusAndValidate(StatusEnum.ACTIVE,company.getId(), new Date());
+        if (contracts == null || contracts.isEmpty()) {
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_CONTRACT_EXPIRED.getMessage());
+        }
+        HashSet<String> modules = new HashSet<>();
+        for (Contract contract : contracts) {
+            List<String> moduleContract = contract.getAppModules().stream().map(AppModule::getName).collect(Collectors.toList());
+            modules.addAll(moduleContract);
+        }
+        return modules;
     }
 
     private AppModuleDTO parseModuleDTO(AppModule appModule) {

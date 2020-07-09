@@ -1,6 +1,7 @@
 package com.myservice.common.service;
 
 import com.myservice.common.domain.IEntity;
+import com.myservice.common.domain.StatusEnum;
 import com.myservice.common.dto.common.IDTO;
 import com.myservice.common.dto.pagination.PageableDTO;
 import org.springframework.data.domain.Page;
@@ -21,4 +22,6 @@ public interface IService<ID extends Serializable, E extends IEntity, D extends 
     E get(ID id);
 
     List<E> listAll();
+
+    List<E> findAllByStatus(StatusEnum status);
 }

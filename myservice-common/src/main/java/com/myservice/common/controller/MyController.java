@@ -2,6 +2,8 @@ package com.myservice.common.controller;
 
 import com.myservice.common.domain.Authorities;
 import com.myservice.common.domain.IEntity;
+import com.myservice.common.domain.StatusEnum;
+import com.myservice.common.dto.auth.AppModuleDTO;
 import com.myservice.common.dto.common.IDTO;
 import com.myservice.common.dto.common.ResponseMessageDTO;
 import com.myservice.common.dto.pagination.PageDTO;
@@ -92,6 +94,14 @@ public abstract class MyController<ID extends Serializable, E extends IEntity, D
         return this.getService().listAll();
     }
 
+    @ApiOperation(value = "List All entity", response = List.class)
+    @GetMapping("/findAllActiveDTO")
+    @PreAuthorize("isAuthenticated()")
+    public Collection<D> findAllActiveDTO() {
+        Collection<E> content = this.getService().findAllByStatus(StatusEnum.ACTIVE);
+        return convertListEntityToDTO(content) ;
+    }
+
     protected PageDTO pageToDTO(final Page<E> page) {
         PageDTO<D> pageDTO = new PageDTO<D>();
         try {
@@ -104,7 +114,7 @@ public abstract class MyController<ID extends Serializable, E extends IEntity, D
         return pageDTO;
     }
 
-    protected Collection<D> convertListEntityToDTO(List<E> listEntity) {
+    protected Collection<D> convertListEntityToDTO(Collection<E> listEntity) {
         Class<D> persistentClass = (Class<D>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
         final ModelMapper modelMapper = new ModelMapper();
         return listEntity
