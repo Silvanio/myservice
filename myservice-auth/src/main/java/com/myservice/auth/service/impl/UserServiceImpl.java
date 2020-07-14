@@ -49,7 +49,7 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         if (userOptional.isPresent()) {
             return parseDTO(userOptional.get());
         } else {
-            throw new  UsernameNotFoundException("User " + username + " Not found");
+            throw new UsernameNotFoundException("User " + username + " Not found");
         }
     }
 
@@ -69,15 +69,15 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
     }
 
     private void validateCountUser(User entity) {
-        List<Contract> contracts = contractRepository.findContractByCompanyIdAndStatusAndValidate(StatusEnum.ACTIVE,entity.getCompany().getId(), new Date());
+        List<Contract> contracts = contractRepository.findContractByCompanyIdAndStatusAndValidate(StatusEnum.ACTIVE, entity.getCompany().getId(), new Date());
         Integer maxUser = 0;
-        for(Contract contract : contracts){
-            if(contract.getCountUser() > maxUser){
-                maxUser =contract.getCountUser();
+        for (Contract contract : contracts) {
+            if (contract.getCountUser() > maxUser) {
+                maxUser = contract.getCountUser();
             }
         }
-        Long count = userRepository.countUserByStatusAndCompany(StatusEnum.ACTIVE,entity.getCompany().getId());
-        if(count >= maxUser && StatusEnum.ACTIVE.equals(entity.getStatus())){
+        Long count = userRepository.countUserByStatusAndCompany(StatusEnum.ACTIVE, entity.getCompany().getId());
+        if (count >= maxUser && StatusEnum.ACTIVE.equals(entity.getStatus())) {
             throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_CONTRACT_LIMIT_USER.getMessage());
         }
 
@@ -199,7 +199,7 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
 
     private HashSet<String> getContractModules(User user) {
         Company company = user.getCompany();
-        List<Contract> contracts = contractRepository.findContractByCompanyIdAndStatusAndValidate(StatusEnum.ACTIVE,company.getId(), new Date());
+        List<Contract> contracts = contractRepository.findContractByCompanyIdAndStatusAndValidate(StatusEnum.ACTIVE, company.getId(), new Date());
         if (contracts == null || contracts.isEmpty()) {
             throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_CONTRACT_EXPIRED.getMessage());
         }
