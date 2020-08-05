@@ -1,4 +1,4 @@
-package com.myservice.discovery.myservicediscoveryserver;
+package com.myservice.discovery;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import org.springframework.boot.SpringApplication;
