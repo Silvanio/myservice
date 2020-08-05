@@ -9,3 +9,6 @@
   #Discovery: http://localhost:9091/
   
   #Admin Server: http://localhost:9091/admin
+  
+  
+  #Config:  https://gitlab.com/jrsilvanio/myservice-config.git

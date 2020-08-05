@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: mymarket
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    config:
+      uri: http://localhost:9090
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB

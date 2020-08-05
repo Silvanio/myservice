@@ -28,6 +28,11 @@ public class AuthController {
         return userService.loadUserInfoBy(info[0], info[1]);
     }
 
+    @RequestMapping("/user")
+    public Principal getCurrentLoggedInUser(Principal user) {
+        return user;
+    }
+
     @ApiOperation(value = "Esqueci minha senha", response = ResponseMessageDTO.class)
     @PostMapping("/forgotPassword/{codeCompany}/{username}")
     public ResponseMessageDTO forgotPassword(@PathVariable String codeCompany, @PathVariable String username) {

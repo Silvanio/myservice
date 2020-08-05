@@ -14,7 +14,8 @@ public enum MessageException {
     MSG_PERIOD_DATE_INVALID("msg_period_date_invalid"),
     MSG_USERNAME_EXIST("msg_username_exist"),
     MSG_CONTRACT_EXPIRED("msg_contract_expired"),
-    MSG_CONTRACT_LIMIT_USER("msg_contract_limit_user");
+    MSG_CONTRACT_LIMIT_USER("msg_contract_limit_user"),
+    MSG_GENERAL_UPLOAD_ERROR("msg_general_upload_error");
 
 
 

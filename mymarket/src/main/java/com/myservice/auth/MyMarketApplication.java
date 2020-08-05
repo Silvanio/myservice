@@ -2,9 +2,9 @@ package com.myservice.auth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import springfox.documentation.builders.PathSelectors;
@@ -20,10 +20,10 @@ import java.util.Collections;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableSwagger2
-@EnableCaching
-public class MyServiceAuthApplication {
+@EnableScheduling
+public class MyMarketApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MyServiceAuthApplication.class, args);
+        SpringApplication.run(MyMarketApplication.class, args);
     }
 
     @Bean
@@ -38,8 +38,8 @@ public class MyServiceAuthApplication {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "MyServices API - Acessos",
-                "API rensponsável por gerenciar as funcionalidades MyServices - Acessos.",
+                "MyMarket API",
+                "API rensponsável por gerenciar as funcionalidades MyServices - MyMarket.",
                 "API Version v01_20062020",
                 "Terms of service",
                 new Contact("Silvânio Júnior", "www.linkedin.com/in/silvaniojunior", "jrsilvanio@gmail.com"),
@@ -47,7 +47,7 @@ public class MyServiceAuthApplication {
     }
 
     @Bean
-    public Validator validatorFactory () {
+    public Validator validatorFactory() {
         return new LocalValidatorFactoryBean();
     }
 
