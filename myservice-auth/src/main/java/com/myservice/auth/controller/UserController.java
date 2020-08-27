@@ -1,9 +1,9 @@
 package com.myservice.auth.controller;
 
 import com.myservice.auth.model.AppModule;
-import com.myservice.auth.model.Authority;
 import com.myservice.auth.model.User;
 import com.myservice.auth.service.UserService;
+import com.myservice.auth.model.Authority;
 import com.myservice.common.controller.MyController;
 import com.myservice.common.dto.auth.AppModuleDTO;
 import com.myservice.common.dto.auth.AuthorityDTO;
@@ -52,6 +52,7 @@ public class UserController extends MyController<Long, User, UserDTO> {
         userService.updateUser(user);
         return ResponseMessageDTO.get("msg_general_success");
     }
+
 
     @Override
     @ApiOperation(value = "Save entity", response = ResponseMessageDTO.class)

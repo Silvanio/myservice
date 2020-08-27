@@ -6,4 +6,4 @@ spring:
     config:
       server:
         git:
-          uri: file:D:\AMBIENTE\Java\My Service\myservice-config
+          uri: file:C:\AMBIENTE\PESSOAL\Java\myservice-config

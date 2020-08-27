@@ -1,8 +1,8 @@
 package com.myservice.auth.controller;
 
-import com.myservice.auth.model.Contract;
 import com.myservice.auth.model.dto.UserCompanyDTO;
 import com.myservice.auth.service.ContractService;
+import com.myservice.auth.model.Contract;
 import com.myservice.common.controller.MyController;
 import com.myservice.common.dto.auth.AppModuleDTO;
 import com.myservice.common.dto.auth.ContractDTO;

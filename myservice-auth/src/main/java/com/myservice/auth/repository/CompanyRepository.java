@@ -10,4 +10,6 @@ import java.util.List;
 public interface CompanyRepository extends IRepository<Long, Company, CompanyDTO> {
 
     List<Company> findTop20ByNameContainingIgnoreCaseAndStatus(String name, StatusEnum status);
+
+    Company findByCode(String code);
 }

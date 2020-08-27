@@ -14,4 +14,6 @@ public interface UserService extends IService<Long, User, UserDTO> {
     void changePassword(UserDTO user);
 
     void updateUser(UserDTO user);
+
+    void createUserMyMarket(User user);
 }

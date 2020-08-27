@@ -1,6 +1,7 @@
 package com.myservice.auth.service.impl;
 
 import com.myservice.auth.model.*;
+import com.myservice.auth.repository.AuthorityRepository;
 import com.myservice.auth.repository.CompanyRepository;
 import com.myservice.auth.repository.ContractRepository;
 import com.myservice.auth.repository.UserRepository;
@@ -39,6 +40,9 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
     UserRepository userRepository;
 
     @Autowired
+    AuthorityRepository authorityRepository;
+
+    @Autowired
     CompanyRepository companyRepository;
 
     @Autowired
@@ -54,8 +58,30 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
     }
 
     @Override
+    public void createUserMyMarket(User user) {
+        Company company = companyRepository.findByCode(user.getCompany().getCode());
+        user.setCompany(company);
+        Authority authority = authorityRepository.findByName("MY_MARKET_USER");
+        if (authority != null) {
+            user.setAuthorities(new HashSet<>());
+            user.getAuthorities().add(authority);
+        }
+        String newPassword = user.getPassword();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        validate(user);
+        Optional<User> userBD = userRepository.findByCodeCompanyAndUsername(company.getCode(), user.getUsername());
+        if (userBD.isPresent()) {
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.MSG_USERNAME_EXIST.getMessage());
+        }
+        userRepository.save(user);
+        sendMailWelcomeMyMarket(user, newPassword);
+    }
+
+
+    @Override
     protected void prepareSave(User entity) {
-        String newPassword = "123456";
+        String newPassword = generatePassword();
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         entity.setPassword(passwordEncoder.encode(newPassword));
         entity.setCompany(companyRepository.getOne(entity.getCompany().getId()));
@@ -66,6 +92,18 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         validateCountUser(entity);
         sendMailWelcome(entity, newPassword);
         super.prepareSave(entity);
+    }
+
+    private String generatePassword() {
+        char[] letras = "iA6uBDEF4HIJKL4MNO6PQRSTUWXwYmbsTZ".toCharArray();
+        String passWord = "";
+        Random generator = new Random();
+        for (int i = 0; i < 5; i++) {
+            int number = generator.nextInt(letras.length);
+            Character value = letras[number];
+            passWord = passWord + "" + value.toString() + i + "" + number;
+        }
+        return passWord;
     }
 
     private void validateCountUser(User entity) {
@@ -83,10 +121,19 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
 
     }
 
+    private void sendMailWelcomeMyMarket(User entity, String newPassword) {
+        try {
+            mailService.sendEmailHtml(fillHtmlWelcome(entity, newPassword, "welcome_mymarket.html"), "MyMarket - Bem vindo(a)", entity.getEmail());
+        } catch (Exception e) {
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.ERROR_SEND_MAIL.getMessage());
+        }
+    }
+
     private void sendMailWelcome(User entity, String newPassword) {
         try {
-            mailService.sendEmailHtml(fillHtmlWelcome(entity, newPassword), "MyServices - Bem vinda(o)", entity.getEmail());
+            mailService.sendEmailHtml(fillHtmlWelcome(entity, newPassword, "welcome.html"), "MyServices - Bem vindo(a)", entity.getEmail());
         } catch (Exception e) {
+            throw new BusinessException(MessageException.MSG_GENERAL_VALIDATE.getMessage(), MessageException.ERROR_SEND_MAIL.getMessage());
         }
     }
 
@@ -106,7 +153,7 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
                 .map(this::parseDTO)
                 .orElseThrow(() -> new BusinessException(MessageException.ERROR_SEND_MAIL.getMessage(), MessageException.USER_NOT_FOUND.getMessage()));
         try {
-            String newPassword = "123456";
+            String newPassword = generatePassword();
             mailService.sendEmailHtml(fillHtmlForgotPassword(userDTO, newPassword), "Recuperar Senha", userDTO.getEmail());
             User user = userRepository.findByCodeCompanyAndUsernameAndStatus(codeCompany, username, StatusEnum.ACTIVE).get();
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -152,7 +199,6 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         }
     }
 
-
     private String fillHtmlForgotPassword(UserDTO user, String newPassword) throws IOException {
         InputStream resource = new ClassPathResource("forgot-password.html").getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
@@ -161,8 +207,8 @@ public class UserServiceImpl extends MyService<Long, User, UserDTO> implements U
         return template;
     }
 
-    private String fillHtmlWelcome(User user, String newPassword) throws IOException {
-        InputStream resource = new ClassPathResource("welcome.html").getInputStream();
+    private String fillHtmlWelcome(User user, String newPassword, String htmlFile) throws IOException {
+        InputStream resource = new ClassPathResource(htmlFile).getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
         String template = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         template = template.replaceAll("@username", user.getName()).replaceAll("@password", newPassword);

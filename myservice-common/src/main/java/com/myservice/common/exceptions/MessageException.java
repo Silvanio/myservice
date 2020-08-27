@@ -15,7 +15,10 @@ public enum MessageException {
     MSG_USERNAME_EXIST("msg_username_exist"),
     MSG_CONTRACT_EXPIRED("msg_contract_expired"),
     MSG_CONTRACT_LIMIT_USER("msg_contract_limit_user"),
-    MSG_GENERAL_UPLOAD_ERROR("msg_general_upload_error");
+    MSG_GENERAL_UPLOAD_ERROR("msg_general_upload_error"),
+    MSG_GENERAL_SYNC_ERROR("msg_general_sync_error"),
+    MSG_GENERAL_INFO_NOT_FOUND("msg_general_info_not_found");
+
 
 
 
